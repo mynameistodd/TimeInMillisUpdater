@@ -23,6 +23,8 @@ public class Main {
     private static String timeInMillisRemoteVersionFile = timeInMillisRemoteBase + "src/version.txt?job=build_jar";
     private static String timeInMillisRemoteJar = timeInMillisRemoteBase + "out/artifacts/TimeInMillis_jar/TimeInMillis.jar?job=build_jar";
 
+    private static int VERSIONS_TO_KEEP = 1;
+
     public static void main(String[] args) {
         System.out.println("Program Start");
 
@@ -62,6 +64,7 @@ public class Main {
         try {
             Process process = Runtime.getRuntime().exec("java -jar " + timeInMillisLocalAppBase + version + "/" + timeInMillisJarFile);
 
+            //get streams
             InputStream inputStream = process.getInputStream();
             InputStream errorStream = process.getErrorStream();
 
@@ -84,10 +87,14 @@ public class Main {
             InputStream versionStream = remoteVersionUrl.openStream();
             newVersion = Integer.parseInt(new String(versionStream.readAllBytes()));
 
+            //server has newer version available, download it
             if (newVersion > currentVersion) {
                 System.out.println("New Version Available: " + newVersion);
+
+                //Create directory for new version
                 Files.createDirectory(Paths.get(timeInMillisLocalAppBase + newVersion + "/"));
 
+                //Download new jar
                 URL remoteJarUrl = new URL(timeInMillisRemoteJar);
                 InputStream jarStream = remoteJarUrl.openStream();
 
@@ -118,6 +125,18 @@ public class Main {
     }
 
     private static void deleteOldVersions(int newVersion) {
+        if (newVersion > VERSIONS_TO_KEEP) {
+            System.out.println("Removing old versions");
 
+            File dir = new File(timeInMillisLocalAppBase);
+            File[] objs = dir.listFiles();
+            if (objs != null && objs.length > (VERSIONS_TO_KEEP + 1)) {
+                for (int i = 0; i < objs.length - VERSIONS_TO_KEEP + 1; i++) {
+                    if (objs[i].isDirectory() && !objs[i].getName().equals(String.valueOf(newVersion))) {
+                        objs[i].deleteOnExit();
+                    }
+                }
+            }
+        }
     }
 }
