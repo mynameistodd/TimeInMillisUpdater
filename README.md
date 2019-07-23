@@ -12,5 +12,5 @@ There are two apps involved in this solution.
 
 ### Notes
 1. Traditionally, I would steer away from reinventing the wheel. Using something like [Getdown](https://github.com/threerings/getdown), [Sparkle](https://sparkle-project.org/), or [ClickOnce](https://en.wikipedia.org/wiki/ClickOnce#Updates) for desktop applications.
-2. Used Gitlab CI to build the project and host the files.
-
+2. There's the possibility that a project like [Electron](https://electronjs.org/) might be a good fit. I've never used it, though, but it would be fun to learn!
+3. Used Gitlab CI to build the project and host the files.
